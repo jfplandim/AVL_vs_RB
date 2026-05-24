@@ -33,5 +33,22 @@ public class QA_Testes_AVL {
         boolean validacao2 = AVL_Verificador.verificarAVL(arvore);
         System.out.println("Status pos-remocao: " + (validacao2 ? "OK" : "ERRO"));
         AVL_Verificador.reportarRotacoes(arvore);
+
+        // 4. Teste de Quebra (Rotacoes Duplas LR e RL)
+        System.out.println("\n4. Teste de estresse: Rotacoes Duplas");
+        AVL_Router_Tree arvoreCritica = new AVL_Router_Tree();
+
+        // Forca LR
+        arvoreCritica.inserir(new PacketRule(3, "IP", "IP", 30));
+        arvoreCritica.inserir(new PacketRule(1, "IP", "IP", 10));
+        arvoreCritica.inserir(new PacketRule(2, "IP", "IP", 20));
+
+        // Forca RL
+        arvoreCritica.inserir(new PacketRule(5, "IP", "IP", 50));
+        arvoreCritica.inserir(new PacketRule(7, "IP", "IP", 70));
+        arvoreCritica.inserir(new PacketRule(6, "IP", "IP", 60));
+
+        boolean validacao3 = AVL_Verificador.verificarAVL(arvoreCritica);
+        System.out.println("Status rotacoes duplas: " + (validacao3 ? "OK" : "ERRO"));
     }
 }
