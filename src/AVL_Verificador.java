@@ -56,4 +56,23 @@ public class AVL_Verificador {
 
         return verificarBalanceamento(node.esquerdo) && verificarBalanceamento(node.direito);
     }
+
+    // Metodo principal para validar a arvore toda
+    public static boolean verificarAVL(AVL_Router_Tree arvore) {
+        NodeAVL raiz = arvore.getRaiz();
+
+        System.out.println("--- Teste de Validacao AVL ---");
+
+        boolean bst = verificarBST(raiz, null, null);
+        boolean alturas = verificarAlturas(raiz);
+        boolean balance = verificarBalanceamento(raiz);
+
+        System.out.println("Status -> BST: " + bst + " | Alturas: " + alturas + " | Balanceamento: " + balance);
+
+        return bst && alturas && balance;
+    }
+
+    public static void reportarRotacoes(AVL_Router_Tree arvore) {
+        System.out.println("Total de rotacoes na arvore: " + arvore.getRotacoes());
+    }
 }
