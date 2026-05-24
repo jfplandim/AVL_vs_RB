@@ -41,20 +41,24 @@ public class AVL_Router_Tree {
 
         //rotações
         //esquerda-esquerda LL
+        // fb > 1 garante que node.esquerdo != null (altura esquerda >= 2)
         if (fb > 1 && regra.getPrioridade() < node.esquerdo.dado.getPrioridade())
             return rotacionarDireita(node);
 
         //direita direita RR
+        // fb < -1 garante que node.direito != null (altura direita >= 2)
         if (fb < -1 && regra.getPrioridade() > node.direito.dado.getPrioridade())
             return rotacionarEsquerda(node);
 
         //esquerda-direita LR
+        // fb > 1 garante que node.esquerdo != null
         if (fb > 1 && regra.getPrioridade() > node.esquerdo.dado.getPrioridade()) {
             node.esquerdo = rotacionarEsquerda(node.esquerdo);
             return rotacionarDireita(node);
         }
 
         //direita-esquerda RL
+        // fb < -1 garante que node.direito != null
         if (fb < -1 && regra.getPrioridade() < node.direito.dado.getPrioridade()) {
             node.direito = rotacionarDireita(node.direito);
             return rotacionarEsquerda(node);
