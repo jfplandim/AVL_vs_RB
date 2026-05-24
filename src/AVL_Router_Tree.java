@@ -195,4 +195,14 @@ public class AVL_Router_Tree {
     public int getRotacoes() {
         return rotacoes;
     }
+
+    public int tamanho() {
+        return tamanho(raiz);
+    }
+
+    private int tamanho(NodeAVL node) {
+        if (node == null)
+            return 0;
+        return 1 + tamanho(node.esquerdo) + tamanho(node.direito);
+    }
 }
