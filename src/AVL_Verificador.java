@@ -42,4 +42,18 @@ public class AVL_Verificador {
         return verificarBST(node.esquerdo, min, prioridade) &&
                 verificarBST(node.direito, prioridade, max);
     }
+
+    // O fator de balanceamento (FB) não pode passar de 1 ou -1
+    private static boolean verificarBalanceamento(NodeAVL node) {
+        if (node == null) return true;
+
+        int fb = altura(node.esquerdo) - altura(node.direito);
+
+        if (fb > 1 || fb < -1) {
+            System.out.println("Erro de balanceamento no nó " + node.dado.getPrioridade() + " | FB: " + fb);
+            return false;
+        }
+
+        return verificarBalanceamento(node.esquerdo) && verificarBalanceamento(node.direito);
+    }
 }
