@@ -13,5 +13,12 @@ public class QA_Testes_AVL {
         boolean validacao1 = AVL_Verificador.verificarAVL(arvore);
         System.out.println("Status pos-insercao: " + (validacao1 ? "OK" : "ERRO"));
         AVL_Verificador.reportarRotacoes(arvore);
+
+        // 2. Buscas
+        System.out.println("\n2. Testando buscas...");
+        PacketRule achou = arvore.buscar(150); // Equivalente ao i=15
+        PacketRule naoAchou = arvore.buscar(999);
+        System.out.println("Busca 150: " + (achou != null ? "Encontrado" : "Falhou"));
+        System.out.println("Busca 999: " + (naoAchou == null ? "Nao encontrado (certo)" : "Falhou"));
     }
 }
