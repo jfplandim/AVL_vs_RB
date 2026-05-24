@@ -209,4 +209,8 @@ public class AVL_Router_Tree {
             return 0;
         return 1 + tamanho(node.esquerdo) + tamanho(node.direito);
     }
+
+    public NodeAVL getRaiz() {
+        return raiz;
+    }
 }
