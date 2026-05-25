@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class geradorPackegerule {
    private static final long seed =1l;
-   private static final int enderecos=100_000;
+   private static final int enderecos=10_000;
 
    private static String gerarIP(Random random){
        return random.nextInt(256)+"." +
