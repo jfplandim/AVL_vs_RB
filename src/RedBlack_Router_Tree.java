@@ -183,4 +183,71 @@ public class RedBlack_Router_Tree {
         //se o laço terminar e x for igual a this.nil, a busca falha
         return this.nil;    //retorna this.nil indicando que não existe
     }
+
+    //substitui a arvore de u por v
+    private void transplant(NodeRBT u, NodeRBT v) {
+        if (u.pai == this.nil) {
+            this.raiz = v;
+        } else if (u == u.pai.esquerdo) {
+            u.pai.esquerdo = v;
+        } else {
+            u.pai.direito = v;
+        }
+        //ligação do pai
+        v.pai = u.pai;
+    }
+
+    //encontra o no com menor chave (mais a esquerda) em uma subarvore
+    private NodeRBT minimo(NodeRBT no) {
+        while (no.esquerdo != this.nil) {
+            no = no.esquerdo;
+        }
+        return no;
+    }
+
+    public void remover(PacketRule pacoteAlvo) {
+        //encontra o nó a ser removido usando a função busca
+        NodeRBT z = buscar(pacoteAlvo);
+        if (z == null || z == this.nil) {
+            return; //a regra n existe no roteador
+        }
+
+        NodeRBT y = z;
+        NodeRBT x;
+        boolean yCorOriginal = y.vermelho;  //lembrar a cor de quem vai sair
+
+        //caso 1 e 2: z tem zero ou apenas um filho
+        if (z.esquerdo == this.nil) {
+            x = z.direito;
+            transplant(z, z.direito);
+        } else if (z.direito == this.nil) {
+            x = z.esquerdo;
+            transplant(z, z.esquerdo);
+        }
+
+        //caso 3: z tem dois filhos
+        else {
+            y = minimo(z.direito);  //busca o sucessor na arvore direita
+            yCorOriginal = y.vermelho;
+            x = y.direito;
+
+            if (y.pai == z) {
+                x.pai = y;  //x aponta para y (msm se x for sentina)
+            } else {
+                transplant(y, y.direito);
+                y.direito = z.direito;
+                y.direito.pai = y;
+            }
+
+            transplant(z, y);
+            y.esquerdo = z.esquerdo;
+            y.esquerdo.pai = y;
+            y.vermelho = z.vermelho;    //y herda a cor de z
+        }
+
+        //se a cor do nó que foi removido era preta, as regras foram violadas
+        if (!yCorOriginal) {
+            removerFixup(x);
+        }
+    }
 }
