@@ -250,4 +250,78 @@ public class RedBlack_Router_Tree {
             removerFixup(x);
         }
     }
+
+    private void removerFixup(NodeRBT x) {
+        //enquanto o nó for a raiz e for preto
+        while (x != this.raiz && x.vermelho == false) {
+
+            if (x == x.pai.direito) {
+                NodeRBT w = x.pai.direito; // w é o irmao de x
+
+                //caso 1: o irmao de x é vermelho
+                if (w.vermelho) {
+                    w.vermelho = false;
+                    x.pai.vermelho = true;
+                    rotacionarEsquerda(x.pai);
+                    w = x.pai.direito;
+                }
+
+                //caso 2: o irmao de x é preto e os filhos do irmao sao pretos
+                if (w.esquerdo.vermelho == false && w.direito.vermelho == false) {
+                    w.vermelho = true;  //retira o preto extra de x e w
+                    x = x.pai;          //sobe o preto extra para o pai
+                } else {
+                    //caso 3: o irmao é preto, o filho esquerdo do irmao é vermelho e direito é preto
+                    if (w.direito.vermelho == false) {
+                        w.esquerdo.vermelho = false;
+                        w.vermelho = true;
+                        rotacionarDireita(w);
+                        w = x.pai.direito;
+                    }
+
+                    //caso 4: o irmao é preto e o filho direito do irmao é vermelho
+                    w.vermelho = x.pai.vermelho;
+                    x.pai.vermelho = false;
+                    w.direito.vermelho = false;
+                    rotacionarEsquerda(x.pai);
+                    x = this.raiz;              //encerra o laço
+                }
+            }
+            //simetria (x é o filho a direita)
+            else {
+                NodeRBT w = x.pai.esquerdo;
+
+                //caso 1
+                if (w.vermelho) {
+                    w.vermelho = false;
+                    x.pai.vermelho = true;
+                    rotacionarDireita(x.pai);
+                    w = x.pai.esquerdo;
+                }
+
+                //caso 2
+                if (w.direito.vermelho == false && w.esquerdo.vermelho == false) {
+                    w.vermelho = true;
+                    x = x.pai;
+                } else {
+                    //caso 3
+                    if (w.esquerdo.vermelho == false) {
+                        w.direito.vermelho = false;
+                        w.vermelho = true;
+                        rotacionarEsquerda(w);
+                        w = x.pai.esquerdo;
+                    }
+
+                    //caso 4
+                    w.vermelho = x.pai.vermelho;
+                    x.pai.vermelho = false;
+                    w.esquerdo.vermelho = false;
+                    rotacionarDireita(x.pai);
+                    x = this.raiz;
+                }
+            }
+        }
+        //garante que o no compensatorio (ou raiz) seja preto
+        x.vermelho = false;
+    }
 }
