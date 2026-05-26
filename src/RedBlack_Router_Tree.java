@@ -162,4 +162,25 @@ public class RedBlack_Router_Tree {
         //garante a raiz seja sempre preta
         this.raiz.vermelho = false;
     }
+
+    public NodeRBT buscar(PacketRule pacoteAlvo) {
+        NodeRBT x = this.raiz;      //começa a busca pela raiz
+
+        //enquanto nao atingit a sentinela
+        while (x != this.nil) {
+            //usa a logica prioridade + id
+            int comparacao = pacoteAlvo.compareTo(x.dado);
+
+            if (comparacao == 0) {
+                return x;   //sucesso na busca
+            } else if (comparacao < 0) {
+                x = x.esquerdo;     //o alvo é menor, desce para a esquerda
+            } else {
+                x = x.direito;      //o alvo é maior, desce para a direita
+            }
+        }
+
+        //se o laço terminar e x for igual a this.nil, a busca falha
+        return this.nil;    //retorna this.nil indicando que não existe
+    }
 }
