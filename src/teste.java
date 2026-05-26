@@ -16,7 +16,7 @@ public class teste {
             avl.inserir(regra);
         }
         long fim=System.nanoTime();
-        long tempoInsercao=fim-inicio;//tempo resultante da busca.
+        long tempoInsercao=fim-inicio;//tempo resultante da busca.git
 
         //Busca nas arvores.
         inicio=System.nanoTime();
