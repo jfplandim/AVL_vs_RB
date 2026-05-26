@@ -108,4 +108,58 @@ public class RedBlack_Router_Tree {
         //corrige violaçãoes das rbt
         inserirFixup(z);
     }
+
+    private void inserirFixup(NodeRBT z) {
+        //enquanto o pai for vermelho, existe violação
+        while (z.pai.vermelho) {
+
+            //verifica se o pai de z é o filho á esquerda do avô
+            if (z.pai == z.pai.pai.esquerdo) {
+                NodeRBT y = z.pai.pai.direito;  //y é o tio de z
+
+                if (y.vermelho) {
+                    //caso 1: o tio é vermelho -> recoloração
+                    z.pai.vermelho = false;     //pai fica preto
+                    y.vermelho = false;         //tio fica preto
+                    z.pai.pai.vermelho = true;  //avô fica vermelho
+                    z = z.pai.pai;              //sobe a verificação para o avô
+                } else {
+                    //caso 2: o tio é preto e z um filho a direita -> triangulo
+                    if (z == z.pai.direito) {
+                        z = z.pai;
+                        rotacionarEsquerda(z);  //alinha os nós para aplicar caso 3
+                    }
+                    //caso 3: o tio é preto e z é um filho a esquerda -> reta
+                    z.pai.vermelho = false;     //pai fica preto
+                    z.pai.pai.vermelho = true;  //avo fica vermelho
+                    rotacionarDireita(z.pai.pai); //rotação no avo para balancear
+                }
+            }
+
+            //simetria: o pai de z é o filho á direita do avô
+            else {
+                NodeRBT y = z.pai.pai.esquerdo; //y é o tio de z
+
+                if (y.vermelho) {
+                    //caso 1: simétrico
+                    z.pai.vermelho = false;
+                    y.vermelho = false;
+                    z.pai.pai.vermelho = true;
+                    z = z.pai.pai;
+                } else {
+                    //caso 2
+                    if (z == z.pai.esquerdo) {
+                        z = z.pai;
+                        rotacionarDireita(z);
+                    }
+                    //caso 3
+                    z.pai.vermelho = false;
+                    z.pai.pai.vermelho = true;
+                    rotacionarEsquerda(z.pai.pai);
+                }
+            }
+        }
+        //garante a raiz seja sempre preta
+        this.raiz.vermelho = false;
+    }
 }
