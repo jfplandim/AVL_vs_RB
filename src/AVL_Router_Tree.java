@@ -26,12 +26,16 @@ public class AVL_Router_Tree {
             return new NodeAVL(regra);
         }
 
-        if (regra.getPrioridade() < node.dado.getPrioridade())
+        //alterando para o uso da regra Prioridade + ID
+        int comparacao = regra.compareTo(node.dado);
+
+        if (comparacao < 0)
             node.esquerdo = inserir(node.esquerdo, regra);
-        else if (regra.getPrioridade() > node.dado.getPrioridade())
+        else if (comparacao > 0)
             node.direito = inserir(node.direito, regra);
         else
-            return node;
+            return node; //ignora caso seja uma regra 100% duplicada
+
 
         //atualiza a altura
         node.altura = 1 + Math.max(altura(node.esquerdo), altura(node.direito));
@@ -42,24 +46,24 @@ public class AVL_Router_Tree {
         //rotações
         //esquerda-esquerda LL
         // fb > 1 garante que node.esquerdo != null (altura esquerda >= 2)
-        if (fb > 1 && regra.getPrioridade() < node.esquerdo.dado.getPrioridade())
+        if (fb > 1 && regra.compareTo(node.esquerdo.dado) < 0)
             return rotacionarDireita(node);
 
         //direita direita RR
         // fb < -1 garante que node.direito != null (altura direita >= 2)
-        if (fb < -1 && regra.getPrioridade() > node.direito.dado.getPrioridade())
+        if (fb < -1 && regra.compareTo(node.direito.dado) > 0)
             return rotacionarEsquerda(node);
 
         //esquerda-direita LR
         // fb > 1 garante que node.esquerdo != null
-        if (fb > 1 && regra.getPrioridade() > node.esquerdo.dado.getPrioridade()) {
+        if (fb > 1 && regra.compareTo(node.esquerdo.dado) > 0) {
             node.esquerdo = rotacionarEsquerda(node.esquerdo);
             return rotacionarDireita(node);
         }
 
         //direita-esquerda RL
         // fb < -1 garante que node.direito != null
-        if (fb < -1 && regra.getPrioridade() < node.direito.dado.getPrioridade()) {
+        if (fb < -1 && regra.compareTo(node.direito.dado) < 0) {
             node.direito = rotacionarDireita(node.direito);
             return rotacionarEsquerda(node);
         }
@@ -100,17 +104,29 @@ public class AVL_Router_Tree {
         return B;
     }
 
-    public PacketRule buscar(int prioridade) {
+    public PacketRule buscar(PacketRule pacoteAlvo) {
         NodeAVL node = raiz;
 
-        while (node != null && node.dado.getPrioridade() != prioridade) {
-            if (prioridade < node.dado.getPrioridade())
+        // Enquanto não chegar em uma folha vazia
+        while (node != null) {
+
+            //delega a comparação para a classe PacketRule
+            int comparacao = pacoteAlvo.compareTo(node.dado);
+
+            if (comparacao == 0) {
+                //encontrou a regra exata (mesma prioridade e mesmo ID)
+                return node.dado;
+            } else if (comparacao < 0) {
+                //o pacote alvo é menor, desce para a esquerda
                 node = node.esquerdo;
-            else
+            } else {
+                //o pacote alvo é maior, desce para a direita
                 node = node.direito;
+            }
         }
 
-        return (node != null) ? node.dado : null;
+        //se o laço terminar, o pacote não está na árvore
+        return null;
     }
 
     //remoção
@@ -122,20 +138,23 @@ public class AVL_Router_Tree {
         return atual;
     }
 
-    public void remover(int prioridade) {
-        raiz = remover(raiz, prioridade);
+    public void remover(PacketRule pacoteAlvo) {
+        raiz = remover(raiz, pacoteAlvo);
     }
 
-    private NodeAVL remover(NodeAVL node, int prioridade) {
+    private NodeAVL remover(NodeAVL node, PacketRule pacoteAlvo) {
         //nó nao encontrado
         if (node == null)
             return null;
-        
+
+        //uso do compareTo
+        int comparacao = pacoteAlvo.compareTo(node.dado);
+
         //1. busca recursiva da bst
-        if (prioridade < node.dado.getPrioridade())
-            node.esquerdo = remover(node.esquerdo, prioridade);
-        else if (prioridade > node.dado.getPrioridade())
-            node.direito = remover(node.direito,  prioridade);
+        if (comparacao < 0)
+            node.esquerdo = remover(node.esquerdo, pacoteAlvo);
+        else if (comparacao > 0)
+            node.direito = remover(node.direito, pacoteAlvo);
         else {
             //apos encontrar o nó
             if (node.esquerdo == null || node.direito == null) {
@@ -155,7 +174,7 @@ public class AVL_Router_Tree {
                 node.dado = sucessor.dado;
 
                 //remove o sucessor da subárvore direita
-                node.direito = remover(node.direito, sucessor.dado.getPrioridade());
+                node.direito = remover(node.direito, sucessor.dado);
             }
 
         }
