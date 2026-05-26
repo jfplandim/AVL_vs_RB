@@ -68,4 +68,44 @@ public class RedBlack_Router_Tree {
 
         rotacoes++;
     }
+
+    public void inserir(PacketRule novoDado) {
+        //instacia o nono nó z
+        NodeRBT z = new NodeRBT(novoDado);
+        z.esquerdo = this.nil;
+        z.direito = this.nil;
+        z.vermelho = true;  //todo novo nó é vermelho
+
+        NodeRBT y = this.nil;
+        NodeRBT x = this.raiz;
+
+        //lógica padrão da bst
+        while (x != this.nil) {
+            y =x;
+            //delega a decisão para o (prioridade + ID) do compareTo
+            int comparacao = novoDado.compareTo(x.dado);
+
+            if (comparacao < 0) {
+                x = x.esquerdo;
+            } else if (comparacao > 0) {
+                x = x.direito;
+            } else {
+                //empate absoluto (msm prioridade e msm id, msm sendo impossivel pois o id é unico)
+                return;
+            }
+        }
+
+        //conecta o pai de z
+        z.pai = y;
+        if (y == this.nil) {
+            this.raiz = z;  //arvore vazia
+        } else if (novoDado.compareTo(y.dado) < 0) {
+            y.esquerdo = z;
+        } else {
+            y.direito = z;
+        }
+
+        //corrige violaçãoes das rbt
+        inserirFixup(z);
+    }
 }
