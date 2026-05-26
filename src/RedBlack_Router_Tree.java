@@ -263,7 +263,8 @@ public class RedBlack_Router_Tree {
         //enquanto o nó for a raiz e for preto
         while (x != this.raiz && x.vermelho == false) {
 
-            if (x == x.pai.direito) {
+            //verifica se o x é o filho a esquerda
+            if (x == x.pai.esquerdo) {
                 NodeRBT w = x.pai.direito; // w é o irmao de x
 
                 //caso 1: o irmao de x é vermelho
@@ -292,7 +293,7 @@ public class RedBlack_Router_Tree {
                     x.pai.vermelho = false;
                     w.direito.vermelho = false;
                     rotacionarEsquerda(x.pai);
-                    x = this.raiz;              //encerra o laço
+                    x = this.raiz;              //define x como raiz para encerrar o laço
                 }
             }
             //simetria (x é o filho a direita)
