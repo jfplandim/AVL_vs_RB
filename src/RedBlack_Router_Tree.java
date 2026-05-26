@@ -2,6 +2,7 @@ public class RedBlack_Router_Tree {
     private NodeRBT raiz;
     private NodeRBT nil;    //sentinela
     private int rotacoes;
+    private int tamanhoDaArvore;
 
     public RedBlack_Router_Tree() {
         this.rotacoes = 0;
@@ -15,6 +16,7 @@ public class RedBlack_Router_Tree {
 
         //arvore nasce vazia, logo a raiz aponta para a sentinela
         this.raiz = this.nil;
+        this.tamanhoDaArvore = 0;
     }
 
     private void rotacionarEsquerda(NodeRBT x) {
@@ -107,6 +109,9 @@ public class RedBlack_Router_Tree {
 
         //corrige violaçãoes das rbt
         inserirFixup(z);
+
+        //atualização do tamanho da arvore
+        this.tamanhoDaArvore++;
     }
 
     private void inserirFixup(NodeRBT z) {
@@ -249,6 +254,9 @@ public class RedBlack_Router_Tree {
         if (!yCorOriginal) {
             removerFixup(x);
         }
+
+        //atualizar o tamanho da arvore
+        this.tamanhoDaArvore--;
     }
 
     private void removerFixup(NodeRBT x) {
@@ -323,5 +331,17 @@ public class RedBlack_Router_Tree {
         }
         //garante que o no compensatorio (ou raiz) seja preto
         x.vermelho = false;
+    }
+
+    public int getRotacoes() {
+        return rotacoes;
+    }
+
+    public NodeRBT getRaiz() {
+        return this.raiz;
+    }
+
+    public int tamanho() {
+        return this.tamanhoDaArvore;
     }
 }
