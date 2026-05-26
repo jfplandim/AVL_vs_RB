@@ -26,4 +26,22 @@ public class PacketRule {
     public int getPrioridade() {
         return prioridade;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof PacketRule)) return false;
+        PacketRule other = (PacketRule) obj;
+        return this.id == other.id && this.prioridade == other.prioridade;
+    }
+
+    @Override
+    public String toString() {
+        return "PacketRule{" +
+                "id=" + id +
+                ", ipOrigem='" + ipOrigem + '\'' +
+                ", ipDestino='" + ipDestino + '\'' +
+                ", prioridade=" + prioridade +
+                '}';
+    }
 }
