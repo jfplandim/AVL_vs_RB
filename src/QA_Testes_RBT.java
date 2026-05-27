@@ -20,6 +20,16 @@ public class QA_Testes_RBT {
         System.out.println("Achou o 150? " + (achou.dado != null));
         System.out.println("Falhou no 999 (como esperado)? " + (nAchou.dado == null));
 
+        // Teste de Remocao
+        // O objetivo aqui e so ver se a arvore nao quebra as regras depois de apagar
+        System.out.println("\n-> Removendo 4 nos e revalidando");
+        arvore.remover(new PacketRule(4, "", "", 40));
+        arvore.remover(new PacketRule(8, "", "", 80));
+        arvore.remover(new PacketRule(12, "", "", 120));
+        arvore.remover(new PacketRule(16, "", "", 160));
 
+        boolean passouRem = RBT_Verificador.verificarRBT(arvore);
+        System.out.println("Remocao OK? " + passouRem);
+        RBT_Verificador.reportarRotacoes(arvore);
     }
 }
