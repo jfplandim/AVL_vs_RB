@@ -1,7 +1,7 @@
 import java.util.*;
 
 
-public class geradorPackegerule {
+public class geradorPacketRule {
    private static final long seed =1l;
 
    private static String gerarIP(Random random){

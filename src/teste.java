@@ -6,54 +6,77 @@ public class teste {
         Scanner sc= new Scanner(System.in);
         System.out.println("Digite quantos registros voce deseja inserir");
         int quantidade  = sc.nextInt();
-        List<PacketRule> regras= new geradorPackegerule().criarNo(quantidade);
+        List<PacketRule> regras= new geradorPacketRule().criarNo(quantidade);
         System.out.println("Registros criados com sucesso");
 
 
         AVL_Router_Tree avl=new AVL_Router_Tree();
+        RedBlack_Router_Tree rb=new RedBlack_Router_Tree();
 
-        int valorOperação=Math.min(1_000,quantidade);
+        int valorOperação=Math.min(100,quantidade);
 
 
-        //Inserção nas árvores.
-        Long inicio= System.nanoTime();
+        //Inserção nas AVL.
+        long inicio= System.nanoTime();
         for(PacketRule regra: regras){
             avl.inserir(regra);
         }
-        Long fim=System.nanoTime();
-        Long tempoInsercao= fim-inicio;
+        long fim=System.nanoTime();
+        long tempoInsercao= fim-inicio;
 
-
-        //coleta as prioridades dos elementos na árvore.
-        List<Integer> prioridades = new ArrayList<>();
-        for( PacketRule regra: regras) {
-            prioridades.add(regra.getPrioridade());
-
+        //Inserção RBT.
+        inicio= System.nanoTime();
+        for(PacketRule regra: regras){
+            rb.inserir(regra);
         }
+        fim=System.nanoTime();
+        long InsercaoRBT= fim-inicio;
+
 
         //busca da árvore.
         inicio=System.nanoTime();
-        for(int i=0;i<1_000;i++){
-            avl.buscar(prioridades.get(i));
+        for(int i=0;i<valorOperação;i++){
+            PacketRule regra= regras.get(i);
+            avl.buscar(regra);
         }
          fim=System.nanoTime();
-        Long tempoBuscar= fim-inicio;
+        long tempoBuscar= fim-inicio;
 
-        //remoção da árvore.
-        inicio=System.nanoTime();
-        for(int i=0;i<1_000;i++){
-            avl.remover(prioridades.get(i));
+        //Busca RBT.
+        inicio= System.nanoTime();
+        for(PacketRule regra: regras){
+            rb.buscar(regra);
         }
         fim=System.nanoTime();
-         Long tempoRemover=fim-inicio;
+        long tempoBuscaRBT= fim-inicio;
+
+
+        int excessao=(int)(quantidade*0.20);//regra dos 20%
+        //remoção da AVL.
+        inicio=System.nanoTime();
+        for(int i=0;i<excessao;i++){
+            PacketRule regra= regras.get(i);
+            avl.remover(regra);
+        }
+        fim=System.nanoTime();
+         long tempoRemover=fim-inicio;
+
+         //Remoção RBT
+        inicio=System.nanoTime();
+        for(int i=0;i<excessao;i++){
+            PacketRule regra= regras.get(i);
+            rb.remover(regra);
+        }
+        fim=System.nanoTime();
+        long remocaoRBT= fim-inicio;
 
 
 
         System.out.println("\nRESUMO COMPARATIVO:");
-        System.out.println("Operação     | AVL (ns/op)");
+        System.out.println("Operação     | AVL (ns/op) | RBT (ns/op)  ");
         System.out.println("-------------|-------------|------------");
-        System.out.printf("Inserção     %11d%n", tempoInsercao / quantidade);
-        System.out.printf("Busca         %11d%n", tempoBuscar   / valorOperação);
-        System.out.printf("Deleção       %11d%n", tempoRemover / valorOperação);
+        System.out.printf("Inserção      %11d |  %d%n", tempoInsercao / quantidade, InsercaoRBT / quantidade);
+        System.out.printf("Busca         %11d |  %d%n", tempoBuscar   / valorOperação, tempoBuscaRBT / quantidade);
+        System.out.printf("Deleção       %11d |  %d%n", tempoRemover / valorOperação,  remocaoRBT / quantidade);
     }
 }
