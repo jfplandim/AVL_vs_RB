@@ -1,48 +1,59 @@
-import javax.lang.model.element.PackageElement;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Scanner;
 public class teste {
     public static void main(String[] args) {
-        System.out.println("Gerando registros");
-        List<PacketRule> regras= new geradorPackegerule().criarNo();
+        Scanner sc= new Scanner(System.in);
+        System.out.println("Digite quantos registros voce deseja inserir");
+        int quantidade  = sc.nextInt();
+        List<PacketRule> regras= new geradorPackegerule().criarNo(quantidade);
         System.out.println("Registros criados com sucesso");
 
-        //Inserção nas árvores.
+
         AVL_Router_Tree avl=new AVL_Router_Tree();
 
-        long inicio=System.nanoTime();
-        for(PacketRule regra :regras){
+        int valorOperação=Math.min(1_000,quantidade);
+
+
+        //Inserção nas árvores.
+        Long inicio= System.nanoTime();
+        for(PacketRule regra: regras){
             avl.inserir(regra);
         }
-        long fim=System.nanoTime();
-        long tempoInsercao=fim-inicio;//tempo resultante da busca.git
+        Long fim=System.nanoTime();
+        Long tempoInsercao= fim-inicio;
 
-        //Busca nas arvores.
+
+        //coleta as prioridades dos elementos na árvore.
+        List<Integer> prioridades = new ArrayList<>();
+        for( PacketRule regra: regras) {
+            prioridades.add(regra.getPrioridade());
+
+        }
+
+        //busca da árvore.
         inicio=System.nanoTime();
         for(int i=0;i<1_000;i++){
-            avl.buscar(i);//lista da maior até a menor prioridade.
+            avl.buscar(prioridades.get(i));
         }
-        fim=System.nanoTime();
-        long tempoBuscar=fim-inicio;
+         fim=System.nanoTime();
+        Long tempoBuscar= fim-inicio;
 
-        //IDs para deleção.
+        //remoção da árvore.
         inicio=System.nanoTime();
         for(int i=0;i<1_000;i++){
-            avl.remover(i);
+            avl.remover(prioridades.get(i));
         }
         fim=System.nanoTime();
-        long tempoRemover=fim-inicio;
-
-
+         Long tempoRemover=fim-inicio;
 
 
 
         System.out.println("\nRESUMO COMPARATIVO:");
         System.out.println("Operação     | AVL (ns/op)");
         System.out.println("-------------|-------------|------------");
-        System.out.printf("Inserção     %11d%n", tempoInsercao / 10_000);
-        System.out.printf("Busca         %11d%n", tempoBuscar   / 10_000);
-        System.out.printf("Deleção       %11d%n", tempoRemover / 10_000);
+        System.out.printf("Inserção     %11d%n", tempoInsercao / quantidade);
+        System.out.printf("Busca         %11d%n", tempoBuscar   / valorOperação);
+        System.out.printf("Deleção       %11d%n", tempoRemover / valorOperação);
     }
 }
