@@ -12,5 +12,14 @@ public class QA_Testes_RBT {
         boolean passouIns = RBT_Verificador.verificarRBT(arvore);
         System.out.println("Insercao OK? " + passouIns);
         RBT_Verificador.reportarRotacoes(arvore);
+
+        // Teste de Busca
+        System.out.println("\n-> Testando buscas");
+        NodeRBT achou = arvore.buscar(new PacketRule(15, "", "", 150));
+        NodeRBT nAchou = arvore.buscar(new PacketRule(0, "", "", 999));
+        System.out.println("Achou o 150? " + (achou.dado != null));
+        System.out.println("Falhou no 999 (como esperado)? " + (nAchou.dado == null));
+
+
     }
 }
