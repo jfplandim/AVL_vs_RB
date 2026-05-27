@@ -1,4 +1,4 @@
-public class PacketRule {
+public class PacketRule implements  Comparable<PacketRule> {
     private int id;
     private String ipOrigem;
     private String ipDestino;
@@ -28,12 +28,16 @@ public class PacketRule {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof PacketRule)) return false;
-        PacketRule other = (PacketRule) obj;
-        return this.id == other.id && this.prioridade == other.prioridade;
+    public int compareTo(PacketRule other) {
+        //regra 1: prioridade
+        if (this.prioridade != other.prioridade) {
+            return Integer.compare(this.prioridade, other.prioridade);
+        }
+
+        //regra 2: ID
+        return Integer.compare(this.id, other.id);
     }
+
 
     @Override
     public String toString() {
