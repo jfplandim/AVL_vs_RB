@@ -31,5 +31,22 @@ public class QA_Testes_RBT {
         boolean passouRem = RBT_Verificador.verificarRBT(arvore);
         System.out.println("Remocao OK? " + passouRem);
         RBT_Verificador.reportarRotacoes(arvore);
+        // Teste de prioridades iguais (tem que aceitar e nao substituir)
+        System.out.println("\n-> Teste Prioridade Igual");
+        RedBlack_Router_Tree arvPrio = new RedBlack_Router_Tree();
+        arvPrio.inserir(new PacketRule(1, "IP1", "IP2", 50));
+        arvPrio.inserir(new PacketRule(2, "IP3", "IP4", 50));
+
+        System.out.println("Tamanho (esperado 2): " + arvPrio.tamanho());
+        System.out.println("Estrutura ta certa? " + RBT_Verificador.verificarRBT(arvPrio));
+
+        // Teste forcando recoloracao
+        System.out.println("\n-> Teste Recoloracao");
+        RedBlack_Router_Tree arvRec = new RedBlack_Router_Tree();
+        for (int i = 1; i <= 5; i++) {
+            arvRec.inserir(new PacketRule(i, "IP", "IP", i * 10));
+        }
+        System.out.println("Estrutura pos recoloracao OK? " + RBT_Verificador.verificarRBT(arvRec));
+        RBT_Verificador.reportarRotacoes(arvRec);
     }
 }
