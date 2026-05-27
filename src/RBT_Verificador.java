@@ -52,4 +52,23 @@ public class RBT_Verificador {
         // se for vermelho soma 0, se for preto soma 1
         return altEsq + (no.vermelho ? 0 : 1);
     }
+    // Verifica se a arvore ta na ordem certa de BST
+    private static boolean verificarBST(NodeRBT no, PacketRule min, PacketRule max) {
+        if (no == null || no.dado == null) return true;
+
+        if (min != null && no.dado.compareTo(min) <= 0) {
+            System.out.println("Erro BST: no " + no.dado.getPrioridade() + " devia ser maior que " + min.getPrioridade());
+            return false;
+        }
+        if (max != null && no.dado.compareTo(max) >= 0) {
+            System.out.println("Erro BST: no " + no.dado.getPrioridade() + " devia ser menor que " + max.getPrioridade());
+            return false;
+        }
+
+        return verificarBST(no.esquerdo, min, no.dado) && verificarBST(no.direito, no.dado, max);
+    }
+
+    public static void reportarRotacoes(RedBlack_Router_Tree arvore) {
+        System.out.println("Rotacoes RBT: " + arvore.getRotacoes());
+    }
 }
