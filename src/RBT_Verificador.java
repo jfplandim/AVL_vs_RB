@@ -25,4 +25,31 @@ public class RBT_Verificador {
 
         return verificarVermelhoSemFilhoVermelho(no.esquerdo) && verificarVermelhoSemFilhoVermelho(no.direito);
     }
+    // Propriedade 5: os caminhos ate a folha tem que ter a mesma qtd de nos pretos
+    private static boolean verificarAlturaPreta(NodeRBT raiz) {
+        int alt = calcularAlturaPreta(raiz);
+        if (alt == -1) {
+            System.out.println("Erro P5: altura preta diferente entre os caminhos");
+            return false;
+        }
+        System.out.println("Altura preta da arvore: " + alt);
+        return true;
+    }
+
+    private static int calcularAlturaPreta(NodeRBT no) {
+        if (no == null || no.dado == null) return 1;
+
+        int altEsq = calcularAlturaPreta(no.esquerdo);
+        int altDir = calcularAlturaPreta(no.direito);
+
+        if (altEsq == -1 || altDir == -1) return -1;
+
+        if (altEsq != altDir) {
+            System.out.println("Erro P5: no " + no.dado.getPrioridade() + " | esq=" + altEsq + " | dir=" + altDir);
+            return -1;
+        }
+
+        // se for vermelho soma 0, se for preto soma 1
+        return altEsq + (no.vermelho ? 0 : 1);
+    }
 }
