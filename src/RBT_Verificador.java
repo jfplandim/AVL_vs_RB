@@ -71,4 +71,23 @@ public class RBT_Verificador {
     public static void reportarRotacoes(RedBlack_Router_Tree arvore) {
         System.out.println("Rotacoes RBT: " + arvore.getRotacoes());
     }
+
+    // Chama esse metodo para testar a arvore inteira
+    public static boolean verificarRBT(RedBlack_Router_Tree arvore) {
+        NodeRBT raiz = arvore.getRaiz();
+
+        System.out.println("--- Teste de Validacao RBT ---");
+
+        boolean prop2 = verificarRaizPreta(raiz);
+        boolean prop4 = verificarVermelhoSemFilhoVermelho(raiz);
+        boolean prop5 = verificarAlturaPreta(raiz);
+        boolean bst = verificarBST(raiz, null, null);
+
+        System.out.println("P2 - Raiz preta: " + (prop2 ? "OK" : "ERRO"));
+        System.out.println("P4 - Sem vermelho consecutivo: " + (prop4 ? "OK" : "ERRO"));
+        System.out.println("P5 - Altura preta uniforme: " + (prop5 ? "OK" : "ERRO"));
+        System.out.println("BST valida (ordem): " + (bst ? "OK" : "ERRO"));
+
+        return prop2 && prop4 && prop5 && bst;
+    }
 }
