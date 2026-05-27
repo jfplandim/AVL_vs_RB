@@ -76,9 +76,18 @@ public class AVL_Router_Tree {
         NodeAVL B = A.esquerdo;
         NodeAVL T2 = B.direito;
 
-        //rearranjo dos ponteiros
+        //B herda o paid e A
+        B.pai = A.pai;
+
+        //rearranjo de B e A
         B.direito = A;
+        A.pai = B;
+
+        //rearranjo de A e T2
         A.esquerdo = T2;
+        if (T2 != null) {
+            T2.pai = A; //se T2 existir, o novo pai dele é A
+        }
 
         //atualiza as alturas
         A.altura = 1 + Math.max(altura(A.esquerdo), altura(A.direito));
@@ -92,9 +101,18 @@ public class AVL_Router_Tree {
         NodeAVL B  = A.direito;
         NodeAVL T2 = B.esquerdo;
 
-        //rearranjo de ponteiros
+        //B herda o pai de A
+        B.pai = A.pai;
+
+        //Rearranjo de B e A
         B.esquerdo = A;
-        A.direito  = T2;
+        A.pai = B;
+
+        //Rearranjo de A e T2
+        A.direito = T2;
+        if (T2 != null) {
+            T2.pai = A; //se T2 existir, o novo pai dele é A
+        }
 
         //atualiza alturas
         A.altura = 1 + Math.max(altura(A.esquerdo), altura(A.direito));
