@@ -18,58 +18,83 @@ public class AVL_Router_Tree {
     }
 
     public void inserir(PacketRule regra) {
-        raiz = inserir(raiz, regra);
-    }
+        NodeAVL novoNo = new NodeAVL(regra);
 
-    private NodeAVL inserir(NodeAVL node, PacketRule regra) {
-        if (node == null) {
-            return new NodeAVL(regra);
+        //se tiver vazia
+        if (raiz == null) {
+            raiz = novoNo;
+            return;
         }
 
-        //alterando para o uso da regra Prioridade + ID
-        int comparacao = regra.compareTo(node.dado);
+        NodeAVL atual = raiz;
+        NodeAVL pai = null;
+        int comparacao = 0;
 
-        if (comparacao < 0)
-            node.esquerdo = inserir(node.esquerdo, regra);
-        else if (comparacao > 0)
-            node.direito = inserir(node.direito, regra);
-        else
-            return node; //ignora caso seja uma regra 100% duplicada
+        //descendo: busca interativa
+        while (atual != null) {
+            pai = atual;
+            comparacao = regra.compareTo(atual.dado);
 
-
-        //atualiza a altura
-        node.altura = 1 + Math.max(altura(node.esquerdo), altura(node.direito));
-
-        //calcula o fator balanceamento
-        int fb = fatorBalanceamento(node);
-
-        //rotações
-        //esquerda-esquerda LL
-        // fb > 1 garante que node.esquerdo != null (altura esquerda >= 2)
-        if (fb > 1 && regra.compareTo(node.esquerdo.dado) < 0)
-            return rotacionarDireita(node);
-
-        //direita direita RR
-        // fb < -1 garante que node.direito != null (altura direita >= 2)
-        if (fb < -1 && regra.compareTo(node.direito.dado) > 0)
-            return rotacionarEsquerda(node);
-
-        //esquerda-direita LR
-        // fb > 1 garante que node.esquerdo != null
-        if (fb > 1 && regra.compareTo(node.esquerdo.dado) > 0) {
-            node.esquerdo = rotacionarEsquerda(node.esquerdo);
-            return rotacionarDireita(node);
+            if (comparacao < 0) {
+                atual = atual.esquerdo;
+            } else if (comparacao > 0) {
+                atual = atual.direito;
+            } else {
+                return; //regra duplicada, ignora
+            }
         }
 
-        //direita-esquerda RL
-        // fb < -1 garante que node.direito != null
-        if (fb < -1 && regra.compareTo(node.direito.dado) < 0) {
-            node.direito = rotacionarDireita(node.direito);
-            return rotacionarEsquerda(node);
+        //inserção: conecta o novo nó ao pai encontrado
+        novoNo.pai = pai;
+        if (comparacao < 0) {
+            pai.esquerdo = novoNo;
+        } else {
+            pai.direito = novoNo;
         }
 
-        //no balanceado
-        return node;
+        //subida: sobe pelo ponteiro pai rebalancenado
+        atual = pai;
+        while (atual != null) {
+            //atualiza a altura do nó atual
+            atual.altura = 1 + Math.max(altura(atual.esquerdo), altura(atual.direito));
+
+            //calcula o fator de balanceamento
+            int fb = fatorBalanceamento(atual);
+            boolean rotacionou = false; //flag
+
+            //verifica os 4 casos e rotaciona se necessário
+            // esquerda-esquerda LL
+            if (fb > 1 && regra.compareTo(atual.esquerdo.dado) < 0) {
+                rotacionarDireita(atual);
+                rotacionou = true;
+            }
+            // direita-direita RR
+            else if (fb < -1 && regra.compareTo(atual.direito.dado) > 0) {
+                rotacionarEsquerda(atual);
+                rotacionou = true;
+            }
+            // esquerda-direita LR
+            else if (fb > 1 && regra.compareTo(atual.esquerdo.dado) > 0) {
+                rotacionarEsquerda(atual.esquerdo);
+                rotacionarDireita(atual);
+                rotacionou = true;
+            }
+            // direita-esquerda RL
+            else if (fb < -1 && regra.compareTo(atual.direito.dado) < 0) {
+                rotacionarDireita(atual.direito);
+                rotacionarEsquerda(atual);
+                rotacionou = true;
+            }
+
+            //se aplicou rotação, a subarvore ja recuperou a altura original
+            if (rotacionou) {
+                break;
+            }
+
+            //sobe para o próximo nível seguindo o ponteiro do pai
+            atual = atual.pai;
+        }
+
     }
 
     private NodeAVL rotacionarDireita(NodeAVL A) {
