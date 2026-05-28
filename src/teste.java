@@ -75,7 +75,7 @@ public class teste {
         System.out.println("Operação     | AVL (ns/op) | RBT (ns/op)  ");
         System.out.println("-------------|-------------|------------");
         System.out.printf("Inserção      %11d |  %d%n", tempoInsercao / quantidade, InsercaoRBT / quantidade);
-        System.out.printf("Busca         %11d |  %d%n", tempoBuscar   / valorOperação, tempoBuscaRBT / quantidade);
+        System.out.printf("Busca         %11d |  %d%n", tempoBuscar   / valorOperação, tempoBuscaRBT / valorOperação);
         System.out.printf("Deleção       %11d |  %d%n", tempoRemover / excessao,  remocaoRBT / excessao);
     }
 }
