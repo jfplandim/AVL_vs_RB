@@ -12,7 +12,7 @@ public class teste {
         AVL_Router_Tree avl=new AVL_Router_Tree();
         RedBlack_Router_Tree rb=new RedBlack_Router_Tree();
 
-        int valorOperação=Math.min(100,quantidade);
+        int valorOperação=Math.min(1_000,quantidade);
 
 
         //Inserção nas AVL.
@@ -43,8 +43,8 @@ public class teste {
 
         //Busca RBT.
         inicio= System.nanoTime();
-        for(PacketRule regra: regras){
-            rb.buscar(regra);
+        for(int i=0;i<valorOperação;i++){
+            rb.buscar(regras.get(i));
         }
         fim=System.nanoTime();
         long tempoBuscaRBT= fim-inicio;
@@ -76,6 +76,6 @@ public class teste {
         System.out.println("-------------|-------------|------------");
         System.out.printf("Inserção      %11d |  %d%n", tempoInsercao / quantidade, InsercaoRBT / quantidade);
         System.out.printf("Busca         %11d |  %d%n", tempoBuscar   / valorOperação, tempoBuscaRBT / quantidade);
-        System.out.printf("Deleção       %11d |  %d%n", tempoRemover / valorOperação,  remocaoRBT / quantidade);
+        System.out.printf("Deleção       %11d |  %d%n", tempoRemover / excessao,  remocaoRBT / excessao);
     }
 }
