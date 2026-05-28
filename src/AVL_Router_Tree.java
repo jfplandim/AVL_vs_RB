@@ -52,7 +52,7 @@ public class AVL_Router_Tree {
             pai.direito = novoNo;
         }
 
-        //subida: sobe pelo ponteiro pai rebalancenado
+        //subida: sobe pelo ponteiro pai rebalanceando
         atual = pai;
         while (atual != null) {
             //atualiza a altura do nó atual
@@ -60,35 +60,31 @@ public class AVL_Router_Tree {
 
             //calcula o fator de balanceamento
             int fb = fatorBalanceamento(atual);
-            boolean rotacionou = false; //flag
+            NodeAVL novoTopo = null;
 
             //verifica os 4 casos e rotaciona se necessário
             // esquerda-esquerda LL
             if (fb > 1 && regra.compareTo(atual.esquerdo.dado) < 0) {
-                rotacionarDireita(atual);
-                rotacionou = true;
+                novoTopo = rotacionarDireita(atual);
             }
             // direita-direita RR
             else if (fb < -1 && regra.compareTo(atual.direito.dado) > 0) {
-                rotacionarEsquerda(atual);
-                rotacionou = true;
+                novoTopo = rotacionarEsquerda(atual);
             }
             // esquerda-direita LR
             else if (fb > 1 && regra.compareTo(atual.esquerdo.dado) > 0) {
                 rotacionarEsquerda(atual.esquerdo);
-                rotacionarDireita(atual);
-                rotacionou = true;
+                novoTopo = rotacionarDireita(atual);
             }
             // direita-esquerda RL
             else if (fb < -1 && regra.compareTo(atual.direito.dado) < 0) {
                 rotacionarDireita(atual.direito);
-                rotacionarEsquerda(atual);
-                rotacionou = true;
+                novoTopo = rotacionarEsquerda(atual);
             }
 
             //se aplicou rotação, a subarvore ja recuperou a altura original
-            if (rotacionou) {
-                break;
+            if (novoTopo != null) {
+                break; //avl no max 1 rotação por inserção
             }
 
             //sobe para o próximo nível seguindo o ponteiro do pai
@@ -118,6 +114,15 @@ public class AVL_Router_Tree {
         A.altura = 1 + Math.max(altura(A.esquerdo), altura(A.direito));
         B.altura = 1 + Math.max(altura(B.esquerdo), altura(B.direito));
 
+        //reconecta B ao avô
+        if (B.pai == null) {
+            raiz = B;
+        } else if (B.pai.esquerdo == A) {
+            B.pai.esquerdo = B;
+        } else {
+            B.pai.direito = B;
+        }
+
         rotacoes++;
         return B;
     }
@@ -142,6 +147,15 @@ public class AVL_Router_Tree {
         //atualiza alturas
         A.altura = 1 + Math.max(altura(A.esquerdo), altura(A.direito));
         B.altura = 1 + Math.max(altura(B.esquerdo), altura(B.direito));
+
+        //reconecta B ao avô
+        if (B.pai == null) {
+            raiz = B;
+        } else if (B.pai.esquerdo == A) {
+            B.pai.esquerdo = B;
+        } else {
+            B.pai.direito = B;
+        }
 
         rotacoes++;
         return B;
@@ -173,89 +187,90 @@ public class AVL_Router_Tree {
     }
 
     //remoção
-    //buscamos o menor valor da subárvore direita(in-order)
-    private NodeAVL menorNo(NodeAVL node) {
-        NodeAVL atual = node;
-        while (atual.esquerdo != null)
-            atual = atual.esquerdo;
-        return atual;
-    }
-
     public void remover(PacketRule pacoteAlvo) {
-        raiz = remover(raiz, pacoteAlvo);
-    }
-
-    private NodeAVL remover(NodeAVL node, PacketRule pacoteAlvo) {
-        //nó nao encontrado
-        if (node == null)
-            return null;
-
-        //uso do compareTo
-        int comparacao = pacoteAlvo.compareTo(node.dado);
-
-        //1. busca recursiva da bst
-        if (comparacao < 0)
-            node.esquerdo = remover(node.esquerdo, pacoteAlvo);
-        else if (comparacao > 0)
-            node.direito = remover(node.direito, pacoteAlvo);
-        else {
-            //apos encontrar o nó
-            if (node.esquerdo == null || node.direito == null) {
-                NodeAVL temp = (node.esquerdo != null) ? node.esquerdo : node.direito;
-
-                //caso 1: folha
-                if (temp == null)
-                    node = null;
-                //caso 2: um filho
-                else
-                    node = temp;
+        //se for nula
+        if (raiz == null) {
+            return;
+        }
+        
+        //descer ate encontrar o ná que vai remover
+        NodeAVL atual = raiz;
+        while (atual != null) {
+            int comparacao = pacoteAlvo.compareTo(atual.dado);
+            if (comparacao < 0) {
+                atual = atual.esquerdo;
+            } else if (comparacao > 0) {
+                atual = atual.direito;
             } else {
-                //caso 3: 2 filhos - busca o sucessor in order
-                NodeAVL sucessor = menorNo(node.direito);
+                break; //encontrado
+            }
+        }
+        
+        if (atual == null) {
+            return; //n encontrado
+        }
+        
+        //remover o no
+        NodeAVL inicioRebalanceamento;
+        
+        if (atual.esquerdo == null || atual.direito == null) {
+            //caso folha ou 1 filho
+            NodeAVL filho = (atual.esquerdo != null) ? atual.esquerdo : atual.direito;
+            inicioRebalanceamento = atual.pai;
+            transplante(atual, filho);
+        } else {
+            //caso 2 filhos: busca sucessor in-order
+            NodeAVL sucessor = atual.direito;
+            while (sucessor.esquerdo != null) {
+                sucessor = sucessor.esquerdo;
+            }
+            
+            inicioRebalanceamento = (sucessor.pai == atual) ? atual : sucessor.pai;
+            
+            //copia os dados e mantém o nó na arvore
+            atual.dado = sucessor.dado;
+            
+            //remove o sucessor 
+            transplante(sucessor, sucessor.direito);
+        }
+        
+        //subir rebalanceando via o pai
+        //pode rebalancear vario niveis
+        NodeAVL node = inicioRebalanceamento;
+        while (node != null) {
+            node.altura = 1 + Math.max(altura(node.esquerdo), altura(node.direito));
 
-                //copia o valor do sucessor para o nó atual
-                node.dado = sucessor.dado;
+            int fb = fatorBalanceamento(node);
+            NodeAVL novoTopo = null;
 
-                //remove o sucessor da subárvore direita
-                node.direito = remover(node.direito, sucessor.dado);
+            //LL
+            if (fb > 1 && fatorBalanceamento(node.esquerdo) >= 0) {
+                novoTopo = rotacionarDireita(node);
             }
 
+            //LR
+            else if (fb > 1 && fatorBalanceamento(node.esquerdo) < 0) {
+                rotacionarEsquerda(node.esquerdo);
+                novoTopo = rotacionarDireita(node);
+            }
+
+            //RR
+            else if (fb < -1 && fatorBalanceamento(node.direito) <= 0) {
+                novoTopo = rotacionarEsquerda(node);
+            }
+
+            //RL
+            else if (fb < -1 && fatorBalanceamento(node.direito) > 0) {
+                rotacionarDireita(node.direito);
+                novoTopo = rotacionarEsquerda(node);
+            }
+
+            if (novoTopo != null) {
+                node = novoTopo; //continua subindo a partir do novo topo
+            }
+
+            node = node.pai;
         }
-
-        //se a árvore tinha só 1 nó e foi removido
-        if (node == null)
-            return null;
-
-        //2. atualiza a altura
-        node.altura = 1 + Math.max(altura(node.esquerdo), altura(node.direito));
-
-        //3. calcula fator de balanceamento
-        int fb = fatorBalanceamento(node);
-
-        //4. rotações
-
-        //LL
-        if (fb > 1 && fatorBalanceamento(node.esquerdo) >= 0)
-            return rotacionarDireita(node);
-
-        //RR
-        if (fb < -1 && fatorBalanceamento(node.direito) <= 0)
-            return rotacionarEsquerda(node);
-
-        //LR
-        if (fb > 1 && fatorBalanceamento(node.esquerdo) < 0) {
-            node.esquerdo = rotacionarEsquerda(node.esquerdo);
-            return  rotacionarDireita(node);
-        }
-
-        //RL
-        if (fb < -1 && fatorBalanceamento(node.direito) > 0) {
-            node.direito = rotacionarDireita(node.direito);
-            return rotacionarEsquerda(node);
-        }
-
-        return node;
-
     }
 
     public int getRotacoes() {
@@ -263,16 +278,44 @@ public class AVL_Router_Tree {
     }
 
     public int tamanho() {
-        return tamanho(raiz);
-    }
-
-    private int tamanho(NodeAVL node) {
-        if (node == null)
+        if (raiz == null) {
             return 0;
-        return 1 + tamanho(node.esquerdo) + tamanho(node.direito);
+        }
+
+        int count = 0;
+        NodeAVL[] pilha = new NodeAVL[1024];
+        int topo = 0;
+        pilha[topo++] = raiz;
+
+        while (topo > 0) {
+            NodeAVL node = pilha[--topo];
+            count++;
+            if (node.esquerdo != null) {
+                pilha[topo++] = node.esquerdo;
+            }
+            if (node.direito  != null) {
+                pilha[topo++] = node.direito;
+            }
+        }
+        return count;
     }
 
     public NodeAVL getRaiz() {
         return raiz;
+    }
+
+    //substitui o nó alvo pelo substituto na árvore, atualizando ponteiros
+    private void transplante(NodeAVL alvo, NodeAVL substituto) {
+        if (alvo.pai == null) {
+            raiz = substituto;
+        } else if (alvo.pai.esquerdo == alvo) {
+            alvo.pai.esquerdo = substituto;
+        } else {
+            alvo.pai.direito = substituto;
+        }
+
+        if (substituto != null) {
+            substituto.pai = alvo.pai;
+        }
     }
 }
